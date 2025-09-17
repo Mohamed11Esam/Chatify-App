@@ -60,10 +60,34 @@ export const signup = async (req, res) => {
   }
 };
 
-export const login = (req, res) => {
-  res.send("login endpoint!");
+export const login = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ message: "Invalid cradintials" });
+      }
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Invalid cradintials" });
+      }
+      generateToken(user._id, res);
+      const userObj = user.toObject ? user.toObject() : { ...user };
+      if (userObj.password) delete userObj.password;
+      res
+        .status(200)
+        .json({ message: "Login successful", user: userObj });
+    } catch (error) {
+      console.error("Login error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
 };
 
 export const logout = (req, res) => {
-  res.send("logout endpoint!");
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+    maxAge: 0,
+  });
+  res.send("Logged out successfully");
 };

@@ -1,6 +1,9 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import { sendWelcomeEmail } from "../emails/emailHandlers.js";
+import dotenv from 'dotenv';
+dotenv.config();
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
   try {
@@ -25,10 +28,19 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    if (newUser) {
-        const savedUser = await newUser.save();
-        generateToken(res, savedUser._id);
-         return res.status(201).json({ message: 'User registered successfully' , user: newUser});  
+  if (newUser) {
+    const savedUser = await newUser.save();
+    // generateToken expects (id, res) - make sure args are in correct order
+    generateToken(savedUser._id, res);
+    // return the saved user but remove sensitive fields like password
+    const userObj = savedUser.toObject ? savedUser.toObject() : { ...savedUser };
+    if (userObj.password) delete userObj.password;
+    res.status(201).json({ message: 'User registered successfully', user: userObj });
+         try {
+          await sendWelcomeEmail(savedUser.email, savedUser.fullName, process.env.CLIENT_URL);
+         } catch (error) {
+          console.error('Error sending welcome email:', error); 
+         }
     }
     else{
         res.status(400).json({ message: 'Invalid user data' });

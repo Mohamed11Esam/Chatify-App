@@ -16,12 +16,6 @@ const arcjetProtection = async (req, res, next) => {
         reason.isRateLimit()
       ) {
         return res.status(429).json({ message: "rate limit exceeded" });
-      } else if (
-        reason &&
-        typeof reason.isBot === "function" &&
-        reason.isBot()
-      ) {
-        return res.status(403).json({ message: "Bot Access denied" });
       } else {
         return res
           .status(403)

@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/Mohamed11Esam/Chatify-App/issues"
   },
-  "homepage": "https://github.com/Mohamed11Esam/Chatify-App#readme"
+  "homepage": "https://github.com/Mohamed11Esam/Chatify-App#readme",
+  "dependencies": {
+    "multer": "^2.0.2"
+  }
 }

@@ -10,7 +10,7 @@ import { useChatStore } from './../store/useChatStore';
 
 function ChatPage() {
     const {logout , isLoggingOut} = useAuthStore();
-    const {activeTab,selectedUser} = useChatStore();
+    const {activeTabs,selectedUser} = useChatStore();
     return (
         <div className="relative w-full max-w-6xl md:h-[800px]">
            <BorderAnimatedContainer>
@@ -19,7 +19,7 @@ function ChatPage() {
                    <ProfileHeader/>
                    <ActiveTabSwitch/>
                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                        {activeTab === 'chats' ? (
+                        {activeTabs === 'chats' ? (
                             <ChatList/>
                         ) : (
                             <ContactList/>

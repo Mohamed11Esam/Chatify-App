@@ -62,26 +62,24 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(400).json({ message: "Invalid cradintials" });
-      }
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        return res.status(400).json({ message: "Invalid cradintials" });
-      }
-      generateToken(user._id, res);
-      const userObj = user.toObject ? user.toObject() : { ...user };
-      if (userObj.password) delete userObj.password;
-      res
-        .status(200)
-        .json({ message: "Login successful", user: userObj });
-    } catch (error) {
-      console.error("Login error:", error);
-      return res.status(500).json({ message: "Internal server error" });
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid cradintials" });
     }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid cradintials" });
+    }
+    generateToken(user._id, res);
+    const userObj = user.toObject ? user.toObject() : { ...user };
+    if (userObj.password) delete userObj.password;
+    res.status(200).json({ message: "Login successful", user: userObj });
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 export const logout = (req, res) => {
@@ -96,21 +94,52 @@ export const logout = (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { profilePicture } = req.body;
+    console.log("Update profile request:", {
+      hasProfilePicture: !!profilePicture,
+      userId: req.user?._id,
+    });
+
     if (!profilePicture) {
       return res.status(400).json({ message: "Profile picture is required" });
     }
+
     const userId = req.user._id;
-    await cloudinary.uploader.destroy(req.user.cloudinaryId);
+
+    // Only destroy old image if cloudinaryId exists
+    if (req.user.cloudinaryId) {
+      try {
+        await cloudinary.uploader.destroy(req.user.cloudinaryId);
+        console.log("Old image destroyed:", req.user.cloudinaryId);
+      } catch (destroyError) {
+        console.error("Error destroying old image:", destroyError);
+        // Continue anyway, don't fail the whole operation
+      }
+    }
+
+    // Upload new image
+    console.log("Uploading new image to cloudinary...");
     const uploadResult = await cloudinary.uploader.upload(profilePicture, {
       folder: "profile_pictures",
     });
-    const updatedUser = await User.findByIdAndUpdate(userId, {
-      profilePicture: uploadResult.secure_url,
-      cloudinaryId: uploadResult.public_id,
-    }, { new: true }).select('-password');  
-    return res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+    console.log("Image uploaded successfully:", uploadResult.public_id);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        profilePicture: uploadResult.secure_url,
+        cloudinaryId: uploadResult.public_id,
+      },
+      { new: true }
+    ).select("-password");
+
+    console.log("User updated successfully");
+    return res
+      .status(200)
+      .json({ message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
     console.error("Update profile error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
-}
+};

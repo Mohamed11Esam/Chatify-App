@@ -17,7 +17,6 @@ function ChatList() {
   if (chats.length === 0) {
     return <NoChatsFound />;
   }
-
   return (
     <>
       {chats.map((chat) => (
@@ -34,7 +33,7 @@ function ChatList() {
             >
               <div className="size-12 rounded-full">
                 <img
-                  src={chat.profilePic || "/avatar.png"}
+                  src={chat.profilePicture || "/avatar.png"}
                   alt={chat.fullName}
                 />
               </div>

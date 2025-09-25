@@ -12,7 +12,6 @@ function ContactList() {
   }, [getAllContacts]);
 
   if (isUsersLoading) return <UsersLoadingSkeleton />;
-
   return (
     <>
       {allContacts?.map((contact) => (
@@ -24,7 +23,7 @@ function ContactList() {
           <div className="flex items-center gap-3">
             <div className={`avatar ${onlineUsers?.includes(contact._id) ? "online" : "offline"}`}>
               <div className="size-12 rounded-full">
-                <img src={contact.profilePic || "/avatar.png"} />
+                <img src={contact.profilePicture || "/avatar.png"} />
               </div>
             </div>
             <h4 className="text-slate-200 font-medium">{contact.fullName}</h4>

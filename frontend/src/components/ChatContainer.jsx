@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import useAuthStore from "../store/useAuthStore.js";
 import useChatStore from "../store/useChatStore.js";
-import { get } from "mongoose";
 import ChatHeader from "./ChatHeader.jsx";
 import NoChatHistoryPlaceholder from './NoChatHistoryPlaceholder.jsx';
 import MessageInput from "./MessageInput.jsx";

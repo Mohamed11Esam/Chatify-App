@@ -39,51 +39,74 @@ export const sendMessage = async (req, res) => {
     // receiver id comes from route param: POST /send/:id
     const receiverId = req.params.id;
     const senderId = req.user._id;
+
     if (!text && !image) {
-      return res.status(400).json({message:"Text or image is required"})
+      return res.status(400).json({ message: "Text or image is required" });
     }
-    if (senderId.equals(receiverId)) {
-      return res.status(401).json({message:"Cannot send messages to yourself"})
+
+    if (senderId.toString() === receiverId.toString()) {
+      return res
+        .status(400)
+        .json({ message: "Cannot send messages to yourself" });
     }
-    const receiverExist = await User.exists({_id:receiverId})
+
+    const receiverExist = await User.exists({ _id: receiverId });
     if (!receiverExist) {
-      return res.status(404).json({message:"Receiver not found"})
+      return res.status(404).json({ message: "Receiver not found" });
     }
+
     let imageUrl;
     if (image) {
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
+
     const newMessage = new Message({
       senderId,
       receiverId,
       text,
       image: imageUrl,
     });
-    await newMessage.save();
-    //todo send meessage in realtime if user is online - socket.id
-    res.status(201).json(newMessage);
+
+    const savedMessage = await newMessage.save();
+
+    // Return the populated message with sender/receiver info if needed
+    const populatedMessage = await Message.findById(savedMessage._id)
+      .populate("senderId", "fullName profilePicture")
+      .populate("receiverId", "fullName profilePicture");
+
+    //todo send message in realtime if user is online - socket.io
+    res.status(201).json(populatedMessage || savedMessage);
   } catch (error) {
     console.log("error in sending message controller", error.message);
     res.status(500).json({ error: "internal server error" });
   }
 };
 
-export const getChatParteners = async (req,res) =>{
+export const getChatParteners = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
-    //find all the message where the loggedin user is the sender or the recevier 
+    //find all the message where the loggedin user is the sender or the recevier
     const messages = await Message.find({
-      $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }]
-    })
+      $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
+    });
 
-    const chatPartenerId = [...new Set(messages.map(msg => msg.senderId.toString() === loggedInUserId.toString() ? msg.receiverId.toString() : msg.senderId.toString()))]
+    const chatPartenerId = [
+      ...new Set(
+        messages.map((msg) =>
+          msg.senderId.toString() === loggedInUserId.toString()
+            ? msg.receiverId.toString()
+            : msg.senderId.toString()
+        )
+      ),
+    ];
 
-    const chatParteners = await User.find({_id : {$in:chatPartenerId}}).select("-password")
-    res.status(200).json(chatParteners)
-  }
-  catch(error){
-     console.log("error in sending message controller", error.message);
+    const chatParteners = await User.find({
+      _id: { $in: chatPartenerId },
+    }).select("-password");
+    res.status(200).json(chatParteners);
+  } catch (error) {
+    console.log("error in sending message controller", error.message);
     res.status(500).json({ error: "internal server error" });
   }
-}
+};

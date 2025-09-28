@@ -19,8 +19,8 @@ function ProfileHeader() {
     reader.readAsDataURL(file);
     reader.onloadend = async () => {
       const base64data = reader.result;
-        setSelectedImg(base64data);
-        await updateProfile({ profilePicture: base64data })
+      setSelectedImg(base64data);
+      await updateProfile({ profilePicture: base64data });
     };
   };
   return (
@@ -34,7 +34,7 @@ function ProfileHeader() {
               onClick={() => fileInputRef.current.click()}
             >
               <img
-                src={selectedImg || authUser?.user.profilePicture || "/avatar.png"}
+                src={selectedImg || authUser?.profilePicture || "/avatar.png"}
                 alt="avatar image"
                 className="size-full object-cover"
               />
@@ -53,18 +53,23 @@ function ProfileHeader() {
           <div>
             {/* userName and online text */}
             <h3 className="text-slate-200 font-medium text-base max-w-[180px] truncate">
-              {authUser?.user.fullName}
+              {authUser?.fullName}
             </h3>
             <p className="text-slate-400 text-sm">Online</p>
           </div>
         </div>
         {/* buttons */}
         <div className="flex gap-4 items-center">
-          <button onClick={()=>{
-            mouseClickSound.currentTime = 0;
-            mouseClickSound.play().catch((error) => {console.log("Error playing sound:", error);});
-            toggleSound();
-          }} className="size-5">
+          <button
+            onClick={() => {
+              mouseClickSound.currentTime = 0;
+              mouseClickSound.play().catch((error) => {
+                console.log("Error playing sound:", error);
+              });
+              toggleSound();
+            }}
+            className="size-5"
+          >
             {isSoundEnabled ? <Volume2Icon /> : <VolumeOffIcon />}
           </button>
           <button onClick={logout} disabled={isLoggingOut} className="size-5">

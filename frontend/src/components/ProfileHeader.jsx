@@ -72,9 +72,9 @@ function ProfileHeader() {
           >
             {isSoundEnabled ? <Volume2Icon /> : <VolumeOffIcon />}
           </button>
-          <button 
-            onClick={logout} 
-            disabled={isLoggingOut} 
+          <button
+            onClick={logout}
+            disabled={isLoggingOut}
             className="size-4 md:size-5 touch-manipulation p-1"
           >
             <LogOut />

@@ -5,7 +5,7 @@ import ChatPage from "./pages/ChatPage.jsx";
 import useAuthStore from "./store/useAuthStore.js";
 import { useEffect } from "react";
 import PageLoader from "./components/PageLoader.jsx";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import SignUpPage from "./pages/SignupPage.jsx";
 
 function App() {
@@ -25,9 +25,18 @@ function App() {
       <div className="absolute bottom-0 -right-4 size-72 md:size-96 bg-cyan-500 opacity-20 blur-[100px]" />
 
       <Routes>
-        <Route path="/" element={authUser ? <ChatPage /> : <Navigate to={"/login"} />} />
-        <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to={"/"} />} />
-        <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />} />
+        <Route
+          path="/"
+          element={authUser ? <ChatPage /> : <Navigate to={"/login"} />}
+        />
+        <Route
+          path="/login"
+          element={!authUser ? <LoginPage /> : <Navigate to={"/"} />}
+        />
+        <Route
+          path="/signup"
+          element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />}
+        />
       </Routes>
 
       <Toaster />

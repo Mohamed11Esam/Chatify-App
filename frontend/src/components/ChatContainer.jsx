@@ -81,7 +81,11 @@ function ChatContainer() {
                         className="rounded-lg w-full max-w-xs sm:max-w-sm h-32 sm:h-40 md:h-48 object-cover"
                       />
                     )}
-                    {msg.text && <p className="mt-2 text-sm md:text-base break-words">{msg.text}</p>}
+                    {msg.text && (
+                      <p className="mt-2 text-sm md:text-base break-words">
+                        {msg.text}
+                      </p>
+                    )}
                     <p className="text-xs mt-1 opacity-75 flex items-center gap-1">
                       {new Date(msg.createdAt).toLocaleTimeString(undefined, {
                         hour: "2-digit",

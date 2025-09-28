@@ -103,33 +103,39 @@ export const useChatStore = create((set, get) => ({
     }
   },
   subscribeToMessages: () => {
-    const {selectedUser,isSoundEnabled} = get();
-    if(!selectedUser) return;
+    const { selectedUser, isSoundEnabled } = get();
+    if (!selectedUser) return;
     const socket = useAuthStore.getState().socket;
-    if(!socket) return;
-    
+    if (!socket) return;
+
     socket.on("receiveMessage", (newMessage) => {
       console.log("Received message via socket:", newMessage);
       const { messages, selectedUser: currentSelectedUser } = get();
-      
+
       // Handle populated senderId/receiverId (objects with _id) vs unpopulated (strings)
       const messageSenderId = newMessage.senderId?._id || newMessage.senderId;
-      const messageReceiverId = newMessage.receiverId?._id || newMessage.receiverId;
+      const messageReceiverId =
+        newMessage.receiverId?._id || newMessage.receiverId;
       const currentUserId = currentSelectedUser._id;
-      
+
       console.log("Message IDs check:", {
         messageSenderId,
         messageReceiverId,
         currentUserId,
-        shouldAdd: messageSenderId === currentUserId || messageReceiverId === currentUserId
+        shouldAdd:
+          messageSenderId === currentUserId ||
+          messageReceiverId === currentUserId,
       });
-      
+
       // Only add message if it's for the currently selected user conversation
-      if (messageSenderId === currentUserId || messageReceiverId === currentUserId) {
+      if (
+        messageSenderId === currentUserId ||
+        messageReceiverId === currentUserId
+      ) {
         console.log("Adding message to chat");
         set({ messages: [...messages, newMessage] });
-        if(isSoundEnabled){
-          const audio = new Audio('/sounds/notification.mp3');
+        if (isSoundEnabled) {
+          const audio = new Audio("/sounds/notification.mp3");
           audio.play().catch(() => {}); // Ignore audio play errors
         }
       } else {
@@ -139,9 +145,9 @@ export const useChatStore = create((set, get) => ({
   },
   unSubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
-    if(socket) {
+    if (socket) {
       socket.off("receiveMessage");
     }
-  }
+  },
 }));
 export default useChatStore;

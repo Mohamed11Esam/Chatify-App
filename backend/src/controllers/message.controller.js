@@ -1,6 +1,8 @@
 import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId, userSocketMap } from "../lib/socket.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
+import { io } from "../lib/socket.js";
 export const getAllContacts = async (req, res) => {
   try {
     const logedInUserId = req.user._id;
@@ -76,6 +78,24 @@ export const sendMessage = async (req, res) => {
       .populate("receiverId", "fullName profilePicture");
 
     //todo send message in realtime if user is online - socket.io
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    console.log("Debug - Receiver Socket ID:", receiverSocketId);
+    console.log("Debug - Online users map:", Object.keys(userSocketMap));
+
+    if (receiverSocketId) {
+      console.log(
+        "Emitting message to receiver:",
+        receiverId,
+        "via socket:",
+        receiverSocketId
+      );
+      io.to(receiverSocketId).emit(
+        "receiveMessage",
+        populatedMessage || savedMessage
+      );
+    } else {
+      console.log("Receiver is not online, no socket found for:", receiverId);
+    }
     res.status(201).json(populatedMessage || savedMessage);
   } catch (error) {
     console.log("error in sending message controller", error.message);

@@ -86,6 +86,7 @@ const useAuthStore = create((set, get) => ({
     const { authUser, socket } = get();
     if (!authUser || (socket && socket.connected)) return;
 
+    console.log("Connecting socket for user:", authUser.fullName);
     const newSocket = io(BASE_URL, {
       withCredentials: true,
     });
@@ -93,8 +94,17 @@ const useAuthStore = create((set, get) => ({
     newSocket.connect();
     set({ socket: newSocket }); // Store socket in Zustand state
 
+    newSocket.on("connect", () => {
+      console.log("Socket connected successfully, ID:", newSocket.id);
+    });
+
     newSocket.on("getOnlineUsers", (usersIds) => {
+      console.log("Online users updated:", usersIds);
       set({ onlineUsers: usersIds });
+    });
+
+    newSocket.on("disconnect", () => {
+      console.log("Socket disconnected");
     });
   },
 

@@ -59,7 +59,7 @@ function ProfileHeader() {
           </div>
         </div>
         {/* buttons */}
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 items-center text-white">
           <button
             onClick={() => {
               mouseClickSound.currentTime = 0;

@@ -95,7 +95,7 @@ function MessageInput() {
               handleSendMessage(e);
             }
           }}
-          className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg py-2 px-4"
+          className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
           placeholder="Type your message..."
         />
 

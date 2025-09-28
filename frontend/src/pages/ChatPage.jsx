@@ -10,15 +10,22 @@ import { useChatStore } from './../store/useChatStore';
 
 function ChatPage() {
     const {logout , isLoggingOut} = useAuthStore();
-    const {activeTabs,selectedUser} = useChatStore();
+    const {activeTabs,selectedUser, setSelectedUser} = useChatStore();
+    
     return (
-        <div className="relative w-full max-w-6xl md:h-[800px]">
+        <div className="relative w-full max-w-7xl mx-auto h-screen md:h-[800px]">
            <BorderAnimatedContainer>
-               {/* left side   */}
-               <div className="w-80 bg-slate-800/50 backdrop-blur-sm flex flex-col">
+               {/* Mobile: Show either sidebar or chat, Desktop: Show both */}
+               
+               {/* Sidebar - Hidden on mobile when chat is selected, always visible on desktop */}
+               <div className={`
+                   w-full md:w-80 lg:w-96 
+                   bg-slate-800/50 backdrop-blur-sm flex flex-col
+                   ${selectedUser ? 'hidden md:flex' : 'flex'}
+               `}>
                    <ProfileHeader/>
                    <ActiveTabSwitch/>
-                   <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                   <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-2">
                         {activeTabs === 'chats' ? (
                             <ChatList/>
                         ) : (
@@ -26,8 +33,12 @@ function ChatPage() {
                         )}
                    </div>
                </div>
-               {/* right side */}
-               <div className="flex-1 flex flex-col bg-slate-900/50 backdrop-blur-sm">
+               
+               {/* Chat Area - Hidden on mobile when no chat selected, always visible when chat selected */}
+               <div className={`
+                   flex-1 flex flex-col bg-slate-900/50 backdrop-blur-sm
+                   ${selectedUser ? 'flex' : 'hidden md:flex'}
+               `}>
                    {selectedUser? <ChatContainer/> : <NoConversationPlaceholder/>}
                </div>
            </BorderAnimatedContainer>

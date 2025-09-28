@@ -24,13 +24,13 @@ function ProfileHeader() {
     };
   };
   return (
-    <div className="p-4 border-b border-slate-700/50">
-      <div className="flex items-center justify-between ">
+    <div className="p-3 md:p-4 border-b border-slate-700/50">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* avatar */}
           <div className="avatar online">
             <button
-              className="size-14 rounded-full overflow-hidden relative group"
+              className="size-12 md:size-14 rounded-full overflow-hidden relative group"
               onClick={() => fileInputRef.current.click()}
             >
               <img
@@ -50,16 +50,16 @@ function ProfileHeader() {
               className="hidden"
             />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             {/* userName and online text */}
-            <h3 className="text-slate-200 font-medium text-base max-w-[180px] truncate">
+            <h3 className="text-slate-200 font-medium text-sm md:text-base truncate">
               {authUser?.fullName}
             </h3>
-            <p className="text-slate-400 text-sm">Online</p>
+            <p className="text-slate-400 text-xs md:text-sm">Online</p>
           </div>
         </div>
         {/* buttons */}
-        <div className="flex gap-4 items-center text-white">
+        <div className="flex gap-3 md:gap-4 items-center text-white">
           <button
             onClick={() => {
               mouseClickSound.currentTime = 0;
@@ -68,11 +68,15 @@ function ProfileHeader() {
               });
               toggleSound();
             }}
-            className="size-5"
+            className="size-4 md:size-5 touch-manipulation p-1"
           >
             {isSoundEnabled ? <Volume2Icon /> : <VolumeOffIcon />}
           </button>
-          <button onClick={logout} disabled={isLoggingOut} className="size-5">
+          <button 
+            onClick={logout} 
+            disabled={isLoggingOut} 
+            className="size-4 md:size-5 touch-manipulation p-1"
+          >
             <LogOut />
           </button>
         </div>

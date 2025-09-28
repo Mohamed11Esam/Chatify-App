@@ -19,6 +19,7 @@ function ChatList() {
   if (chats.length === 0) {
     return <NoChatsFound />;
   }
+  console.log(onlineUsers);
   return (
     <>
       {chats.map((chat) => (

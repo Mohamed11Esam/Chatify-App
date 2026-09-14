@@ -48,8 +48,8 @@ function ChatContainer() {
               const isFromCurrentUser =
                 messageSenderId?.toString() === authUser?._id?.toString();
 
-              // Debug logging (remove in production)
-              if (process.env.NODE_ENV === "development") {
+              // Debug logging (development only)
+              if (import.meta.env.DEV) {
                 console.log("Message comparison:", {
                   msgSenderId: msg.senderId,
                   messageSenderIdExtracted: messageSenderId,

@@ -8,9 +8,22 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
+const rawClientUrl = process.env.CLIENT_URL?.trim().replace(/\/+$/, "");
+const allowedOrigins = [
+  "http://localhost:5173",
+  ...(rawClientUrl ? [rawClientUrl] : []),
+];
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || process.env.NODE_ENV === "production") {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   },
 });
